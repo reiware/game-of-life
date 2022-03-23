@@ -35,6 +35,6 @@ body {
 
 #game {
     border: 1px solid black;
-    height: 50rem;
-    width: 50rem;
+    min-height: 50rem;
+    min-width: 50rem;
 }
