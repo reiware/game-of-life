@@ -1,3 +1,5 @@
+import { CELL_SIZE, CELL_PADDING } from './constants';
+import { iterateGeneration } from './iterateGeneration';
 import './style.css';
 
 const app = document.querySelector<HTMLDivElement>('#app')!;
@@ -14,7 +16,7 @@ startButton.addEventListener('click', (e) => {
   isRunning = !isRunning;
   startButton.innerText = isRunning ? 'Stop' : 'Start';
   if (isRunning) {
-    timeoutId = setInterval(iterateGeneration, 1000);
+    timeoutId = setInterval(update, 250);
   } else {
     clearInterval(timeoutId);
   }
@@ -34,8 +36,7 @@ canvas.addEventListener('mousemove', (e) => {
 canvas.addEventListener('mousedown', (e) => {
   toggleCellAtCoords(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
 });
-const NUMBER_OF_CELLS = 10;
-const CELL_SIZE = 64;
+const NUMBER_OF_CELLS = Math.round(canvas.width / (CELL_SIZE + CELL_PADDING));
 const INITIAL_STATE = [
   0, 0, 0, 0, 0,
   0, 0, 1, 0, 0,
@@ -67,23 +68,10 @@ const init = () => {
 init();
 
 function toggleCellAtCoords(x:number, y:number) {
-  const cellIndex = Math.floor(x / CELL_SIZE) + (Math.floor(y / CELL_SIZE)) * NUMBER_OF_CELLS;
+  const cellIndex = Math.floor(x / (CELL_SIZE + CELL_PADDING)) + (Math.floor(y / (CELL_SIZE + CELL_PADDING))) * NUMBER_OF_CELLS;
+//   const cellIndex = Math.floor((x) / (CELL_SIZE + CELL_PADDING));
+  console.log(`TOGGLING ${cellIndex}`);
   if (cellIndex >= 0 && cellIndex < cells.length) {
-    const i = cellIndex;
-    const rowIndex = (Math.floor(y / CELL_SIZE)) * NUMBER_OF_CELLS;
-    const currentGen = cells;
-    const neighborL = currentGen[i - 1];
-    const neighborR = currentGen[i + 1];
-    const neighborT = currentGen[i - NUMBER_OF_CELLS];
-    const neighborTL = currentGen[i - 1 - NUMBER_OF_CELLS];
-    const neighborTR = currentGen[i + 1 - NUMBER_OF_CELLS];
-    const neighborB = currentGen[i + NUMBER_OF_CELLS];
-    const neighborBL = currentGen[i - 1 + NUMBER_OF_CELLS];
-    const neighborBR = currentGen[i + 1 + NUMBER_OF_CELLS];
-    console.log('_____');
-    console.log([neighborTL, neighborT, neighborTR]);
-    console.log([neighborL, cells[cellIndex], neighborR]);
-    console.log([neighborBL, neighborB, neighborBR]);
     cells[cellIndex] = cells[cellIndex] === 0 ? 1 : 0;
   }
 }
@@ -94,8 +82,8 @@ function draw() {
   let rowIndex = 0;
   for (let i = 0; i < cells.length; i++) {
     if (i > 0 && i % NUMBER_OF_CELLS === 0) { rowIndex += 1; }
-    const posX = CELL_SIZE * (i % NUMBER_OF_CELLS) + (1 * (i % NUMBER_OF_CELLS));
-    const posY = rowIndex * CELL_SIZE + (1 * rowIndex);
+    const posX = CELL_SIZE * (i % NUMBER_OF_CELLS) + (CELL_PADDING * (i % NUMBER_OF_CELLS));
+    const posY = rowIndex * CELL_SIZE + (CELL_PADDING * rowIndex);
     ctx.fillStyle = cells[i] === 1 ? 'rgb(70,70,70)' : 'rgb(230,230,230)';
     if (
       mouseX >= posX && mouseX <= posX + CELL_SIZE
@@ -109,37 +97,16 @@ function draw() {
       CELL_SIZE,
       CELL_SIZE,
     );
+    ctx.fillStyle = 'black';
+    ctx.fillText(`${i}`, posX + CELL_SIZE / 2, posY + CELL_SIZE / 2);
   }
-  ctx.fillStyle = 'black';
   ctx.textAlign = 'right';
   ctx.fillText(`X: ${mouseX}, Y:${mouseY}, Iteration: ${iteration}`, canvas.width - 20, canvas.height - 20);
   requestAnimationFrame(draw);
 }
 
-function iterateGeneration() {
-  const currentGen = cells;
-  const nextGen = new Array(currentGen.length).fill(0);
-  for (let i = 0; i < currentGen.length; i++) {
-    nextGen[i] = currentGen[i];
-    let numberOfNeighbours = 0;
-    numberOfNeighbours += currentGen[i - 1] || 0;
-    numberOfNeighbours += currentGen[i + 1] || 0;
-    numberOfNeighbours += currentGen[i - NUMBER_OF_CELLS] || 0;
-    numberOfNeighbours += currentGen[i - 1 - NUMBER_OF_CELLS] || 0;
-    numberOfNeighbours += currentGen[i + 1 - NUMBER_OF_CELLS] || 0;
-    numberOfNeighbours += currentGen[i + NUMBER_OF_CELLS] || 0;
-    numberOfNeighbours += currentGen[i - 1 + NUMBER_OF_CELLS] || 0;
-    numberOfNeighbours += currentGen[i + 1 + NUMBER_OF_CELLS] || 0;
-
-    if (numberOfNeighbours > 3 || numberOfNeighbours < 2) {
-      nextGen[i] = 0;
-    } else if (numberOfNeighbours === 3) {
-      nextGen[i] = 1;
-    }
-  }
-  cells = nextGen;
-  iteration += 1;
-  console.log('TICK');
-}
-
 requestAnimationFrame(draw);
+function update() {
+  cells = iterateGeneration(cells, NUMBER_OF_CELLS);
+  iteration += 1;
+}
