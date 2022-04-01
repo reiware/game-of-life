@@ -16,7 +16,7 @@ startButton.addEventListener('click', (e) => {
   isRunning = !isRunning;
   startButton.innerText = isRunning ? 'Stop' : 'Start';
   if (isRunning) {
-    timeoutId = setInterval(update, 250);
+    timeoutId = setInterval(update, 16);
   } else {
     clearInterval(timeoutId);
   }
@@ -30,31 +30,31 @@ let mouseY = 0;
 resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 canvas.addEventListener('mousemove', (e) => {
-  mouseX = e.clientX - canvas.offsetLeft;
-  mouseY = e.clientY - canvas.offsetTop;
+  mouseX = e.clientX - canvas.offsetLeft + window.screenX;
+  mouseY = e.clientY - canvas.offsetTop + window.scrollY;
+});
+window.addEventListener('keypress', (e) => {
+  if (e.code === 'NumpadAdd') {
+    update(true);
+  }
+  console.log();
 });
 canvas.addEventListener('mousedown', (e) => {
-  toggleCellAtCoords(e.clientX - canvas.offsetLeft, e.clientY - canvas.offsetTop);
+  toggleCellAtCoords(e.clientX - canvas.offsetLeft - window.scrollX, e.clientY - canvas.offsetTop + window.scrollY);
 });
-const NUMBER_OF_CELLS = Math.round(canvas.width / (CELL_SIZE + CELL_PADDING));
-const INITIAL_STATE = [
-  0, 0, 0, 0, 0,
-  0, 0, 1, 0, 0,
-  0, 0, 1, 0, 0,
-  0, 0, 1, 0, 0,
-  0, 0, 0, 0, 0,
-];
+const NUMBER_OF_CELLS = Math.floor(canvas.width / (CELL_SIZE + CELL_PADDING));
 let iteration = 0;
 
-let cells = INITIAL_STATE;
+let cells:number[] = [];
 const init = () => {
   if (!canvas || !ctx) return;
   cells = new Array(NUMBER_OF_CELLS * NUMBER_OF_CELLS).fill(0);
-  // const cells = INITIAL_STATE;
-  console.log(cells);
+
   let rowIndex = 0;
   for (let i = 0; i < cells.length; i++) {
     if (i > 0 && i % NUMBER_OF_CELLS === 0) { rowIndex += 1; }
+    // Randomize
+    cells[i] = Math.round(Math.random());
     ctx.fillStyle = cells[i] === 1 ? 'rgb(70,70,70)' : 'rgb(230,230,230)';
     ctx.fillRect(
       CELL_SIZE * (i % NUMBER_OF_CELLS) + (1 * (i % NUMBER_OF_CELLS)),
@@ -68,10 +68,20 @@ const init = () => {
 init();
 
 function toggleCellAtCoords(x:number, y:number) {
-  const cellIndex = Math.floor(x / (CELL_SIZE + CELL_PADDING)) + (Math.floor(y / (CELL_SIZE + CELL_PADDING))) * NUMBER_OF_CELLS;
-//   const cellIndex = Math.floor((x) / (CELL_SIZE + CELL_PADDING));
-  console.log(`TOGGLING ${cellIndex}`);
-  if (cellIndex >= 0 && cellIndex < cells.length) {
+  const col = Math.floor(x / (CELL_SIZE + CELL_PADDING));
+  const row = Math.floor(y / (CELL_SIZE + CELL_PADDING));
+
+  const cellIndex = col + row * NUMBER_OF_CELLS;
+
+  const minX = col * (CELL_SIZE + CELL_PADDING);
+  const maxX = col * (CELL_SIZE + CELL_PADDING) + CELL_SIZE;
+  const minY = row * (CELL_SIZE + CELL_PADDING);
+  const maxY = row * (CELL_SIZE + CELL_PADDING) + CELL_SIZE;
+
+  const isValidCellX = x >= minX && x <= maxX;
+  const isValidCellY = y >= minY && y <= maxY;
+
+  if (cellIndex >= 0 && cellIndex < cells.length && isValidCellX && isValidCellY) {
     cells[cellIndex] = cells[cellIndex] === 0 ? 1 : 0;
   }
 }
@@ -98,15 +108,26 @@ function draw() {
       CELL_SIZE,
     );
     ctx.fillStyle = 'black';
-    ctx.fillText(`${i}`, posX + CELL_SIZE / 2, posY + CELL_SIZE / 2);
+    // ctx.fillText(`${i}`, posX + CELL_SIZE / 2, posY + CELL_SIZE / 2);
   }
   ctx.textAlign = 'right';
+
   ctx.fillText(`X: ${mouseX}, Y:${mouseY}, Iteration: ${iteration}`, canvas.width - 20, canvas.height - 20);
   requestAnimationFrame(draw);
 }
 
 requestAnimationFrame(draw);
-function update() {
-  cells = iterateGeneration(cells, NUMBER_OF_CELLS);
+
+let prevGen:number[] = [];
+
+function update(isForceUpdate = false) {
+  const newGen = iterateGeneration(cells, NUMBER_OF_CELLS);
+
+  if (JSON.stringify(prevGen) === JSON.stringify(newGen) && !isForceUpdate) {
+    clearInterval(timeoutId);
+    return;
+  }
+  prevGen = [...cells];
+  cells = [...newGen];
   iteration += 1;
 }

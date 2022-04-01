@@ -1,5 +1,5 @@
 // calculates new generation for the grid
-export function iterateGeneration(currentGeneration: number[], numberOfCells:number) {
+export function iterateGeneration(currentGeneration: number[], numberOfCells:number):number[] {
   const nextGen = new Array(currentGeneration.length).fill(0);
   for (let i = 0; i < currentGeneration.length; i++) {
     nextGen[i] = currentGeneration[i];
