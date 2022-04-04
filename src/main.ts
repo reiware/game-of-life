@@ -12,7 +12,7 @@ let timeoutId = 0;
 const startButton = document.getElementById('start-button') as HTMLButtonElement;
 const canvas = document.getElementById('game') as HTMLCanvasElement;
 const ctx = canvas.getContext('2d');
-startButton.addEventListener('click', (e) => {
+startButton.addEventListener('click', () => {
   isRunning = !isRunning;
   startButton.innerText = isRunning ? 'Stop' : 'Start';
   if (isRunning) {
