@@ -16,7 +16,7 @@ startButton.addEventListener('click', () => {
   isRunning = !isRunning;
   startButton.innerText = isRunning ? 'Stop' : 'Start';
   if (isRunning) {
-    timeoutId = setInterval(update, 16);
+    timeoutId = window.setInterval(update, 16);
   } else {
     clearInterval(timeoutId);
   }
