@@ -7,7 +7,7 @@
         <title>Game of Life TS</title>
     </head>
     <body>
-        <h1>Game of Life</h1>
+        <h1 id="title">Game of Life</h1>
         <div id="game-wrapper">
             <canvas id="game">Your browser does not support canvas.</canvas>
         </div>
@@ -16,7 +16,11 @@
             <button id="random-button">Randomize</button>
             <button id="clear-button">Clear</button>
             <button id="iterate-button">Iterate</button>
-            <input type="range" min="1" max="1000" title="Iteration speed" />
+            <div>
+                <span>Iteration Speed: </span>
+                <input id="iteration-speed" type="range" min="16" max="1000" title="Iteration speed" />
+                <label id="iteration-speed-label" for="iteration-speed"></label>
+            </div>
         </div>
         <script type="module" src="/src/main.ts"></script>
     </body>

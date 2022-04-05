@@ -6,6 +6,7 @@ type Configuration = {
     numberOfCols: number;
     cellPadding: number;
     cellSize: number;
+    iterationSpeed: number;
 }
 
 export const Config:Configuration = {
@@ -13,4 +14,5 @@ export const Config:Configuration = {
   cellSize: 16,
   numberOfCols: 10,
   numberOfRows: 10,
+  iterationSpeed: 16,
 };

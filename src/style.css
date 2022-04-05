@@ -11,11 +11,17 @@ html {
 
 body {
     font-family: BlinkMacSystemFont, -apple-system, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    "Helvetica", "Arial", sans-serif;
+        "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+        "Helvetica", "Arial", sans-serif;
     font-size: 1.6em;
     height: 100%;
     overflow: auto;
+    background-color: rgb(56, 56, 56);
+    color: #ececec;
+}
+
+#title {
+    text-align: center;
 }
 
 #app {
@@ -40,7 +46,24 @@ body {
 }
 
 #controls {
-    margin: 0 auto;
+    margin: 1rem auto;
     display: flex;
     justify-content: center;
 }
+
+#controls>button {
+    margin-right: 1rem;
+    padding: 0.5rem 1rem;
+    background-color: #369731;
+    border: none;
+    border-radius: 0.8rem;
+    color: #ececec;
+    transition: background-color 0.1s ease-out;
+}
+
+#controls>button:hover{
+    background-color: #14601f;
+
+}
+
+#contorls input
