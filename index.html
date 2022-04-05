@@ -5,11 +5,11 @@
         <link rel="icon" type="image/svg+xml" href="/game-of-life/assets/favicon.17e50649.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Game of Life TS</title>
-      <script type="module" crossorigin src="/game-of-life/assets/index.1f86974a.js"></script>
-      <link rel="stylesheet" href="/game-of-life/assets/index.5c6e947e.css">
+      <script type="module" crossorigin src="/game-of-life/assets/index.37b68292.js"></script>
+      <link rel="stylesheet" href="/game-of-life/assets/index.a95fba66.css">
     </head>
     <body>
-        <h1>Game of Life</h1>
+        <h1 id="title">Game of Life</h1>
         <div id="game-wrapper">
             <canvas id="game">Your browser does not support canvas.</canvas>
         </div>
@@ -18,7 +18,11 @@
             <button id="random-button">Randomize</button>
             <button id="clear-button">Clear</button>
             <button id="iterate-button">Iterate</button>
-            <input type="range" min="1" max="1000" title="Iteration speed" />
+            <div>
+                <span>Iteration Speed: </span>
+                <input id="iteration-speed" type="range" min="16" max="1000" title="Iteration speed" />
+                <label id="iteration-speed-label" for="iteration-speed"></label>
+            </div>
         </div>
         
     </body>
